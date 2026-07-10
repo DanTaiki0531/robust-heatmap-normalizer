@@ -1,0 +1,8 @@
+input_images/*
+!input_images/.gitkeep
+
+input_json/*
+!input_json/.gitkeep
+
+output_images/*
+!output_images/.gitkeep

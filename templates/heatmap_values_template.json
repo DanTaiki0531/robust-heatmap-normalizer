@@ -1,0 +1,14 @@
+{
+  "output_filename": "sample_heatmap.png",
+  "caption": "ここに図のキャプションを書く",
+  "x_axis_label": "Support task",
+  "y_axis_label": "Query task",
+  "row_labels": ["comp", "rec", "sci", "talk"],
+  "col_labels": ["comp", "rec", "sci", "talk"],
+  "values": [
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0]
+  ]
+}

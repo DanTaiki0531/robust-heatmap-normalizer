@@ -1,0 +1,14 @@
+{
+  "output_filename": "meta_v1.png",
+  "caption": "heatmap_v1_meta | meta | mean | steps 0-999",
+  "x_axis_label": "Support task",
+  "y_axis_label": "Query task",
+  "row_labels": ["comp", "rec", "sci", "talk"],
+  "col_labels": ["comp", "rec", "sci", "talk"],
+  "values": [
+    [0.03, 7.87e-03, 0.01, 4.41e-03],
+    [4.11e-03, 0.04, 4.52e-03, 6.30e-04],
+    [-0.02, -1.69e-03, 0.03, -5.05e-04],
+    [1.31e-03, -1.58e-03, 1.51e-03, 0.03]
+  ]
+}
