@@ -743,11 +743,11 @@ def build_heatmap_data_from_csvs(args: argparse.Namespace) -> list[HeatmapData]:
     return heatmaps
 
 
-def compute_global_color_limits(
-    heatmaps: Sequence[HeatmapData],
+def compute_color_limits(
+    z_values: pd.DataFrame,
     clip_value: Optional[float],
 ) -> tuple[float, float]:
-    all_z = np.concatenate([item.z_values.to_numpy(dtype=float).ravel() for item in heatmaps])
+    all_z = z_values.to_numpy(dtype=float).ravel()
     if clip_value is not None:
         if clip_value <= 0:
             raise ValueError("--clip_value must be positive.")
@@ -771,9 +771,8 @@ def main() -> int:
         else:
             heatmaps = build_heatmap_data_from_jsons(args)
 
-        vmin, vmax = compute_global_color_limits(heatmaps, args.clip_value)
-
         for item in heatmaps:
+            vmin, vmax = compute_color_limits(item.z_values, args.clip_value)
             image_output = args.output_dir / ensure_png_suffix(
                 item.output_filename or f"{item.name}.png"
             )
