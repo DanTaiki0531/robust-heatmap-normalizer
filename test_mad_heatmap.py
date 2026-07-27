@@ -9,7 +9,7 @@ from mad_heatmap import (
     compute_mad,
     mad_color_limits,
     mad_colorbar_ticks,
-    output_filename_for_scale,
+    scale_directory_name,
 )
 
 
@@ -77,14 +77,14 @@ class MadColorScaleTest(unittest.TestCase):
         self.assertEqual(colorbar_extend_for_values(values, -1.0, 6.0), "min")
         self.assertEqual(colorbar_extend_for_values(values, -3.0, 6.0), "neither")
 
-    def test_output_filename_records_scale(self):
+    def test_output_directory_records_scale(self):
         self.assertEqual(
-            output_filename_for_scale("sample.png", 2.0, 2.0),
-            "sample_mad_k2.png",
+            scale_directory_name(2.0, 2.0),
+            "kp_2_kn_2",
         )
         self.assertEqual(
-            output_filename_for_scale("sample.png", 2.0, 1.0),
-            "sample_mad_kp2_kn1.png",
+            scale_directory_name(8.0, 1.5),
+            "kp_8_kn_1p5",
         )
 
 

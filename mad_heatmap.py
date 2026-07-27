@@ -65,17 +65,11 @@ def mad_color_limits(
     }
 
 
-def output_filename_for_scale(
-    filename: str, positive_k: float, negative_k: float
-) -> str:
-    path = Path(base.ensure_png_suffix(filename))
+def scale_directory_name(positive_k: float, negative_k: float) -> str:
+    """Return a filesystem-friendly directory name recording both scales."""
     positive_text = format(positive_k, "g").replace(".", "p")
     negative_text = format(negative_k, "g").replace(".", "p")
-    if positive_k == negative_k:
-        suffix = f"_mad_k{positive_text}"
-    else:
-        suffix = f"_mad_kp{positive_text}_kn{negative_text}"
-    return f"{path.stem}{suffix}.png"
+    return f"kp_{positive_text}_kn_{negative_text}"
 
 
 def mad_colorbar_ticks(vmin: float, vmax: float) -> list[float]:
@@ -189,9 +183,10 @@ def main() -> int:
                 colorbar_ticks = mad_colorbar_ticks(vmin, vmax)
                 colorbar_extend = colorbar_extend_for_values(item.values, vmin, vmax)
                 source_filename = item.output_filename or f"{item.name}.png"
-                image_output = output_dir / output_filename_for_scale(
-                    source_filename, positive_k, negative_k
+                scale_output_dir = output_dir / scale_directory_name(
+                    positive_k, negative_k
                 )
+                image_output = scale_output_dir / base.ensure_png_suffix(source_filename)
                 base.plot_robust_colored_heatmap(
                     item.values,
                     color_values,

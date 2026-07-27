@@ -32,12 +32,12 @@ python3 mad_heatmap.py \
   --output_dir output_images
 ```
 
-出力ファイル名に使用した `k` が付きます。
+使用した `k` ごとにサブフォルダが作られます。
 
 ```text
-sample_mad_k1.png
-sample_mad_k2.png
-sample_mad_k3.png
+kp_1_kn_1/sample.png
+kp_2_kn_2/sample.png
+kp_3_kn_3/sample.png
 ```
 
 特定の `k` だけを使う場合:
@@ -52,4 +52,5 @@ python3 mad_heatmap.py --mad_k 2
 python3 mad_heatmap.py --positive_k 3 --negative_k 2
 ```
 
-この場合、出力名は `sample_mad_kp3_kn2.png` のようになります。
+この場合、`kp_3_kn_2/sample.png` のように保存されます。
+小数の `k` は、例えば `1.5` を `1p5` としてフォルダ名に記録します。
