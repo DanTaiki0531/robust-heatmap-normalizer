@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.colors import TwoSlopeNorm
 
+from robust_heatmap import format_annotation
 from mad_heatmap import (
     colorbar_extend_for_values,
     compute_mad,
@@ -14,6 +15,11 @@ from mad_heatmap import (
 
 
 class MadColorScaleTest(unittest.TestCase):
+    def test_cell_annotations_use_one_scientific_format(self):
+        self.assertEqual(format_annotation(0.04, ".2e"), "4.00e-02")
+        self.assertEqual(format_annotation(0.000804, ".2e"), "8.04e-04")
+        self.assertEqual(format_annotation(-0.00178, ".2e"), "-1.78e-03")
+
     def test_calculates_median_absolute_deviation(self):
         values = pd.DataFrame([[1.0, 2.0], [3.0, 100.0]])
 

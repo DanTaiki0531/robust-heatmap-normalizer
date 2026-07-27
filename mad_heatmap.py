@@ -141,6 +141,14 @@ def parse_args():
         default=None,
         help="Optional blue-side MAD multiplier; overrides each --mad_k value.",
     )
+    parser.add_argument(
+        "--annotation_format",
+        default=".2e",
+        help=(
+            "Python numeric format used uniformly for every cell annotation. "
+            "Default: .2e (for example, 4.00e-02). Use .5f for fixed decimals."
+        ),
+    )
     for action in parser._actions:
         if action.dest == "clip_value":
             action.help = (
@@ -205,6 +213,7 @@ def main() -> int:
                     colorbar_label="Original value (MAD-based limits)",
                     colorbar_ticks=colorbar_ticks,
                     colorbar_extend=colorbar_extend,
+                    annotation_format=args.annotation_format,
                 )
                 print(
                     f"Saved {image_output} "

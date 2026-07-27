@@ -54,3 +54,19 @@ python3 mad_heatmap.py --positive_k 3 --negative_k 2
 
 この場合、`kp_3_kn_2/sample.png` のように保存されます。
 小数の `k` は、例えば `1.5` を `1p5` としてフォルダ名に記録します。
+
+## セル値の表記
+
+デフォルトでは、すべてのセル値を仮数部小数2桁の科学表記に統一します。
+
+```text
+4.00e-02
+8.04e-04
+-1.78e-03
+```
+
+固定小数表記にする場合は、例えば次のように指定します。
+
+```bash
+python3 mad_heatmap.py --annotation_format .5f
+```

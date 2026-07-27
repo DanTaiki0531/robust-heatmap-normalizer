@@ -606,6 +606,7 @@ def plot_robust_colored_heatmap(
     colorbar_label: str = "Robust standardized value",
     colorbar_ticks: Optional[Sequence[float]] = None,
     colorbar_extend: str = "neither",
+    annotation_format: Optional[str] = None,
 ) -> None:
     plot_values = standardized_values.astype(float)
     if clip_value is not None:
@@ -613,7 +614,11 @@ def plot_robust_colored_heatmap(
             raise ValueError("--clip_value must be positive.")
         plot_values = plot_values.clip(lower=-clip_value, upper=clip_value)
 
-    annotations = original_values.apply(lambda column: column.map(format_annotation))
+    annotations = original_values.apply(
+        lambda column: column.map(
+            lambda value: format_annotation(value, annotation_format)
+        )
+    )
     norm = TwoSlopeNorm(vmin=vmin, vcenter=0.0, vmax=vmax)
 
     fig, ax = plt.subplots(figsize=figsize)
@@ -656,8 +661,10 @@ def plot_robust_colored_heatmap(
     plt.close(fig)
 
 
-def format_annotation(value: float) -> str:
+def format_annotation(value: float, number_format: Optional[str] = None) -> str:
     value = float(value)
+    if number_format is not None:
+        return format(value, number_format)
     if value == 0:
         return "0"
     if abs(value) < 0.001 or abs(value) >= 1000:
