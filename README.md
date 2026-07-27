@@ -70,6 +70,20 @@ python create_json_from_image.py \
   --input_dir input_images
 ```
 
+カテゴリフォルダ内の画像をまとめて処理する:
+
+```bash
+python create_json_from_image.py \
+  --input_dir input_images/category_a
+```
+
+各画像に対応するJSONが、カテゴリ名を引き継いだフォルダに保存されます。
+
+```text
+input_images/category_a/sample.png
+  -> input_json/category_a/sample.json
+```
+
 キャプションと軸名を指定して作る:
 
 ```bash
@@ -187,6 +201,21 @@ python robust_heatmap.py
 python robust_heatmap.py \
   --input_json_dir input_json \
   --output_dir output_images
+```
+
+カテゴリフォルダ内のJSONをまとめて処理する:
+
+```bash
+python robust_heatmap.py \
+  --input_json_dir input_json/category_a \
+  --output_dir output_images
+```
+
+各JSONに対応するヒートマップが、カテゴリ名を引き継いだフォルダに保存されます。
+
+```text
+input_json/category_a/sample.json
+  -> output_images/category_a/sample.png
 ```
 
 特定のJSONだけ処理する:

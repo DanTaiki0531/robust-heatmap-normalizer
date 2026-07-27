@@ -124,6 +124,13 @@ def ensure_paths_exist(paths: Sequence[Path]) -> None:
         raise FileNotFoundError(f"Missing image path(s): {', '.join(missing)}")
 
 
+def resolve_output_dir(input_dir: Optional[Path], output_dir: Path) -> Path:
+    """Mirror a selected category directory below the JSON output root."""
+    if input_dir is None or input_dir.resolve() == Path("input_images").resolve():
+        return output_dir
+    return output_dir / input_dir.name
+
+
 def output_png_name(image_path: Path, explicit_name: Optional[str]) -> str:
     if explicit_name:
         name = Path(explicit_name).name
@@ -242,10 +249,11 @@ def main() -> int:
         if unsupported:
             raise ValueError(f"Unsupported image extension(s): {', '.join(unsupported)}")
 
+        destination_dir = resolve_output_dir(args.input_dir, args.output_dir)
         written = []
         for image_path in image_paths:
             payload = build_payload(image_path, args, len(image_paths))
-            output_path = args.output_dir / f"{image_path.stem}.json"
+            output_path = destination_dir / f"{image_path.stem}.json"
             write_json(payload, output_path, args.overwrite)
             written.append(output_path)
     except Exception as exc:

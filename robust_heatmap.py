@@ -44,6 +44,7 @@ from typing import Optional, Sequence
 _cache_base = Path(tempfile.gettempdir())
 os.environ.setdefault("MPLCONFIGDIR", str(_cache_base / "matplotlib"))
 os.environ.setdefault("XDG_CACHE_HOME", str(_cache_base / "xdg-cache"))
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -78,9 +79,9 @@ class HeatmapData:
     output_filename: str = ""
 
 
-def parse_args() -> argparse.Namespace:
+def build_parser(description: Optional[str] = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=(
+        description=description or (
             "Recolor heatmaps using robust standardized cell values while "
             "preserving original numeric annotations."
         )
@@ -200,7 +201,11 @@ def parse_args() -> argparse.Namespace:
             "axis labels, or colorbars confuse OCR."
         ),
     )
-    return parser.parse_args()
+    return parser
+
+
+def parse_args(description: Optional[str] = None) -> argparse.Namespace:
+    return build_parser(description).parse_args()
 
 
 def ensure_paths_exist(paths: Sequence[Path], kind: str) -> None:
@@ -258,6 +263,18 @@ def collect_json_paths(input_json_dir: Path) -> list[Path]:
     if not json_paths:
         raise FileNotFoundError(f"No JSON files found in {input_json_dir}.")
     return json_paths
+
+
+def resolve_json_output_dir(
+    input_json_dir: Optional[Path], output_dir: Path
+) -> Path:
+    """Mirror a selected JSON category directory below the image output root."""
+    if (
+        input_json_dir is None
+        or input_json_dir.resolve() == DEFAULT_INPUT_JSON_DIR.resolve()
+    ):
+        return output_dir
+    return output_dir / input_json_dir.name
 
 
 def extract_values_from_heatmap_image(
@@ -586,6 +603,9 @@ def plot_robust_colored_heatmap(
     caption: str = "",
     x_axis_label: str = "",
     y_axis_label: str = "",
+    colorbar_label: str = "Robust standardized value",
+    colorbar_ticks: Optional[Sequence[float]] = None,
+    colorbar_extend: str = "neither",
 ) -> None:
     plot_values = standardized_values.astype(float)
     if clip_value is not None:
@@ -598,8 +618,10 @@ def plot_robust_colored_heatmap(
 
     fig, ax = plt.subplots(figsize=figsize)
     image = ax.imshow(plot_values.to_numpy(dtype=float), cmap=cmap, norm=norm)
-    cbar = fig.colorbar(image, ax=ax)
-    cbar.set_label("Robust standardized value")
+    cbar = fig.colorbar(image, ax=ax, extend=colorbar_extend)
+    if colorbar_ticks is not None:
+        cbar.set_ticks(list(colorbar_ticks))
+    cbar.set_label(colorbar_label)
 
     ax.set_xticks(np.arange(len(col_labels)))
     ax.set_yticks(np.arange(len(row_labels)))
@@ -761,7 +783,6 @@ def compute_color_limits(
 
 def main() -> int:
     args = parse_args()
-    args.output_dir.mkdir(parents=True, exist_ok=True)
 
     try:
         if args.input_dir or args.input_images:
@@ -771,9 +792,18 @@ def main() -> int:
         else:
             heatmaps = build_heatmap_data_from_jsons(args)
 
+        output_dir = (
+            resolve_json_output_dir(args.input_json_dir, args.output_dir)
+            if args.input_jsons is None
+            and not (args.input_dir or args.input_images)
+            and not (args.input_csv_dir or args.input_csvs)
+            else args.output_dir
+        )
+        output_dir.mkdir(parents=True, exist_ok=True)
+
         for item in heatmaps:
             vmin, vmax = compute_color_limits(item.z_values, args.clip_value)
-            image_output = args.output_dir / ensure_png_suffix(
+            image_output = output_dir / ensure_png_suffix(
                 item.output_filename or f"{item.name}.png"
             )
             plot_robust_colored_heatmap(
@@ -796,7 +826,7 @@ def main() -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    print(f"Saved {len(heatmaps)} heatmap image(s) to {args.output_dir}")
+    print(f"Saved {len(heatmaps)} heatmap image(s) to {output_dir}")
     return 0
 
 
